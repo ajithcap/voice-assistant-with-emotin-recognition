@@ -43,7 +43,9 @@ def speak(audio):
 def face_recognition_with_emotion():
     # initialize OpenCV face detection model
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
+    # it was create the folder where you need to give authorized person photos in here
+    if not os.path.exists("authorized_persons"):
+    os.makedirs("authorized_persons")
     # load image of authorized person
     #authorized_person_image = face_recognition.load_image_file("aw.jpg")
     #authorized_person_encoding = face_recognition.face_encodings(authorized_person_image)[0]
