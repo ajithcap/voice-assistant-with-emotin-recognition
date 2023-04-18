@@ -1,0 +1,100 @@
+def face_recognition_with_emotion():
+    # initialize OpenCV face detection model
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+   
+
+
+    # initialize webcam
+    cap = cv2.VideoCapture(0)
+
+    # initialize flag variables to track face detection and recognition
+    face_detected = False
+    face_recognized = False
+
+    while True:
+        # capture frame from webcam
+        ret, frame = cap.read()
+
+        # convert frame to grayscale
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # detect faces in the grayscale frame
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+        # iterate over detected faces
+        for (x, y, w, h) in faces:
+            # crop face region from the frame
+            face = gray[y:y+h, x:x+w]
+
+            # recognize the person in the face
+            face_encoding = face_recognition.face_encodings(frame, [(y, x+w, y+h, x)])[0]
+
+           
+            # check if the person is authorized
+            if True in results:
+                face_recognized = True
+
+                # set flag variable to True
+                face_detected = True
+                print("Your face has been recognized!")
+            else:
+                print("You are not authorized")
+
+                # draw a rectangle around the face
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+        # perform emotion recognition using Deepface
+        if face_detected and face_recognized:
+            # crop face region from the frame
+            face = frame[y:y+h, x:x+w]
+            resized_face = cv2.resize(face, (48, 48))
+            result = DeepFace.analyze(resized_face, actions=['emotion'], enforce_detection=False)
+
+            # extract the dominant emotion
+            emotion = max(result[0]['emotion'].items(), key=lambda x: x[1])[0]
+
+            # label with detected emotion
+            cv2.putText(frame, emotion, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+
+            # print the detected emotion
+            print("Detected emotion:", emotion)
+
+            # perform action based on emotion
+            if emotion == 'happy':
+                speak("looks like your so happy today  boss ! . it's good to see you ")
+                print("looks like your so happy today  boss ! . it's good to see you ")
+                # add your code here to perform action for authorized persons
+            elif emotion =='neutral':
+                speak("how can i help you to make your day joyful ") 
+                print("how can i help you to make your day joyful ")   
+            elif emotion =='fear':
+                speak("what happend sir anything problem")
+                print("what happend sir anything problem")
+            elif emotion =='sad':
+                speak("why you are sad sir")
+                print("why you are sad sir")
+            elif emotion =='surprise':
+                speak("how is this surprise sir !")
+                print("how is this surprise sir !")
+            elif emotion == 'angry':
+                speak("why are you angry sir")
+                print("why are you angry sir")
+            else:
+                speak("what can i do for give your emotion")
+                print("what can i do for give your emotion")
+            
+            break
+
+        # display the frame
+        cv2.imshow('Face Recognition', frame)
+
+        # exit if 'q' key is pressed
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+
