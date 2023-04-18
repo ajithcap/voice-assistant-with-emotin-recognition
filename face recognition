@@ -1,0 +1,40 @@
+def face_recognition_with_emotion():
+    # initialize OpenCV face detection model
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+    # load image of authorized person
+    #authorized_person_image = face_recognition.load_image_file("aw.jpg")
+    #authorized_person_encoding = face_recognition.face_encodings(authorized_person_image)[0]
+    if not os.path.exists("authorized_persons"):
+        os.makedirs("authorized_persons")
+    authorized_person_encodings = []
+    for filename in os.listdir(r"C:\Users\Admin\Documents\ajith\emotion\authorized_persons"):
+        image = face_recognition.load_image_file("./authorized_persons/" + filename)
+        encoding = face_recognition.face_encodings(image)[0]
+        authorized_person_encodings.append(encoding)
+ cap = cv2.VideoCapture(0)
+
+    # initialize flag variables to track face detection and recognition
+    face_detected = False
+    face_recognized = False
+
+    while True:
+        # capture frame from webcam
+        ret, frame = cap.read()
+
+        # convert frame to grayscale
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # detect faces in the grayscale frame
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+        # iterate over detected faces
+        for (x, y, w, h) in faces:
+            # crop face region from the frame
+            face = gray[y:y+h, x:x+w]
+
+            # recognize the person in the face
+            face_encoding = face_recognition.face_encodings(frame, [(y, x+w, y+h, x)])[0]
+
+            #results = face_recognition.compare_faces([authorized_person_encoding], face_encoding)
+            results = face_recognition.compare_faces(authorized_person_encodings, face_encoding)
