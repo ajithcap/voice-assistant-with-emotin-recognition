@@ -1,0 +1,41 @@
+from PIL import Image, ImageTk
+import tkinter as tk
+import os
+
+
+# Define the path to the GIF file
+gif_path = os.path.join('INTRO', 'gifintro.gif')
+
+# Create a Tkinter window
+window = tk.Tk()
+
+# Load the GIF file with Pillow
+with Image.open(gif_path) as gif:
+
+    # Create a PhotoImage object from each frame of the GIF
+    frames = []
+    for frame in range(gif.n_frames):
+        gif.seek(frame)
+        frames.append(ImageTk.PhotoImage(gif.copy()))
+
+    # Create a Label widget to display the GIF frames
+    label = tk.Label(window)
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    # Set the window size to match the GIF size
+    window.geometry("%dx%d+0+0" % (w, h))
+    # Center the window on the screen
+    #window.eval('tk::PlaceWindow .left')
+
+    # Define a function to animate the GIF
+    def animate(frame):
+        label.config(image=frames[frame])
+        window.after(gif.info['duration'], animate, (frame+1) % gif.n_frames)
+
+    # Pack the Label widget to fill the window
+    label.pack(fill='both', expand=True)
+
+    # Start animating the GIF
+    animate(0)
+    window.after(5000, window.destroy)
+    # Start the Tkinter main loop
+    window.mainloop()
