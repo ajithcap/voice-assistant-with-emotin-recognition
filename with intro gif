@@ -33,6 +33,7 @@ import os
 
 
 # Define the path to the GIF file
+
 gif_path = os.path.join('INTRO', 'gifintro.gif')
 
 # Create a Tkinter window
